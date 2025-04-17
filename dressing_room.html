@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dressing Room | MC Run</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('fonts/Minecraft.ttf');
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Minecraft';
+      user-select: none;
+    }
+    body {
+      background: url('images/bg.png') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 90vw;
+      max-width: 500px;
+      height: 96vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .skin-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 3vh;
+    }
+    .skin-name {
+      font-size: 6vw;
+      color: white;
+      text-shadow: 2px 2px black;
+      margin-bottom: 2vh;
+    }
+    .skin-img {
+      width: 42vw;
+      max-width: 190px;
+      image-rendering: pixelated;
+    }
+    .arrow-row {
+      display: flex;
+      justify-content: center;
+      gap: 6vw;
+      margin: 3vh 0 1.5vh 0;
+    }
+    .btn {
+      background-image: url('images/button.png');
+      background-size: cover;
+      background-position: center;
+      border: none;
+      font-size: 4.5vw;
+      padding: 2vh 6vw;
+      color: white;
+      text-shadow: 1px 1px black;
+      image-rendering: pixelated;
+      text-align: center;
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .small-btn {
+      width: 22vw;
+    }
+    .wide-btn {
+      width: 70vw;
+      margin-bottom: 2vh;
+    }
+    .disabled-btn {
+      opacity: 0.4;
+      filter: grayscale(100%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="skin-preview">
+      <div class="skin-name" id="skinName">Steve</div>
+      <img src="images/skins/steve.png" id="skinImage" class="skin-img" />
+    </div>
+
+    <div class="arrow-row">
+      <button class="btn small-btn" onclick="prevSkin()">←</button>
+      <button class="btn small-btn" onclick="nextSkin()">→</button>
+    </div>
+
+    <button class="btn wide-btn" id="equipButton">Equipped</button>
+    <button class="btn wide-btn" onclick="location.href='index.html'">Back To Home</button>
+  </div>
+
+  <script src="skins.js"></script>
+  <script>
+    let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins') || '["steve","alex"]');
+    let equippedSkin = localStorage.getItem('equippedSkin') || "steve";
+    let ownedSkinData = skins.filter(skin => ownedSkins.includes(skin.id));
+    let currentIndex = ownedSkinData.findIndex(s => s.id === equippedSkin);
+    if (currentIndex === -1) currentIndex = 0;
+
+    function updateSkinDisplay() {
+      const skin = ownedSkinData[currentIndex];
+      document.getElementById('skinName').innerText = skin.name;
+      document.getElementById('skinImage').src = skin.image;
+
+      const equipBtn = document.getElementById('equipButton');
+      if (skin.id === equippedSkin) {
+        equipBtn.innerText = "Equipped";
+        equipBtn.classList.add('disabled-btn');
+        equipBtn.disabled = true;
+      } else {
+        equipBtn.innerText = "Equip";
+        equipBtn.classList.remove('disabled-btn');
+        equipBtn.disabled = false;
+      }
+    }
+
+    function prevSkin() {
+      currentIndex = (currentIndex - 1 + ownedSkinData.length) % ownedSkinData.length;
+      updateSkinDisplay();
+    }
+
+    function nextSkin() {
+      currentIndex = (currentIndex + 1) % ownedSkinData.length;
+      updateSkinDisplay();
+    }
+
+    document.getElementById('equipButton').addEventListener('click', () => {
+      equippedSkin = ownedSkinData[currentIndex].id;
+      localStorage.setItem('equippedSkin', equippedSkin);
+      updateSkinDisplay();
+    });
+
+    updateSkinDisplay();
+  </script>
+</body>
+</html>

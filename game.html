@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MC Run - Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: skyblue;
+      font-family: 'Minecraft', sans-serif;
+    }
+
+    canvas {
+      display: block;
+      background: #87ceeb; /* sky blue */
+      touch-action: manipulation;
+    }
+
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('fonts/Minecraft.ttf');
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const blockSize = height / 10;
+
+    // Load images
+    const playerImg = new Image();
+    const grassImg = new Image();
+    const tntImg = new Image();
+    playerImg.src = "images/player.png";
+    grassImg.src = "images/grass.png";
+    tntImg.src = "images/tnt.png";
+
+    // Game variables
+    let player = {
+      x: blockSize * 2,
+      y: height - blockSize * 5,
+      width: blockSize,
+      height: blockSize * 3,
+      vy: 0,
+      jumpForce: blockSize * 1.6,
+      grounded: false
+    };
+
+    let gravity = blockSize * 0.08;
+    let scrollSpeed = blockSize * 0.1;
+
+    let ground = {
+      y: height - blockSize * 2,
+      height: blockSize * 2
+    };
+
+    let tnts = [
+      { x: width + 200, width: blockSize, height: blockSize }
+    ];
+
+    let score = 0;
+    let emeralds = 0;
+
+    function resetGame() {
+      player.y = height - ground.height - player.height;
+      player.vy = 0;
+      tnts = [{ x: width + 200, width: blockSize, height: blockSize }];
+      score = 0;
+      emeralds = 0;
+    }
+
+    function jump() {
+      if (player.grounded) {
+        player.vy = -player.jumpForce;
+        player.grounded = false;
+      }
+    }
+
+    function isColliding(a, b) {
+      return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+      );
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw grass
+      for (let i = 0; i < Math.ceil(width / blockSize); i++) {
+        ctx.drawImage(grassImg, i * blockSize, ground.y, blockSize, ground.height);
+      }
+
+      // Player gravity
+      player.vy += gravity;
+      player.y += player.vy;
+
+      if (player.y + player.height >= ground.y) {
+        player.y = ground.y - player.height;
+        player.vy = 0;
+        player.grounded = true;
+      }
+
+      // Draw player
+      ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+
+      // TNT logic
+      tnts.forEach(tnt => {
+        tnt.x -= scrollSpeed;
+        ctx.drawImage(tntImg, tnt.x, ground.y - tnt.height, tnt.width, tnt.height);
+
+        if (isColliding(player, {
+          x: tnt.x + blockSize * 0.1,
+          y: ground.y - tnt.height,
+          width: tnt.width - blockSize * 0.2,
+          height: tnt.height
+        })) {
+          alert("You Died!\nScore: " + score);
+          resetGame();
+        }
+
+        if (tnt.x + tnt.width < 0) {
+          score++;
+          emeralds = Math.floor(score / 10);
+          tnt.x = width + Math.random() * width;
+        }
+      });
+
+      // UI
+      ctx.fillStyle = "#000";
+      ctx.font = blockSize * 0.8 + "px Minecraft";
+      ctx.fillText("Score: " + score, 20, 40);
+      ctx.fillText("Emeralds: " + emeralds, 20, 80);
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Handle jump
+    window.addEventListener("touchstart", jump);
+    window.addEventListener("keydown", e => {
+      if (e.code === "Space") jump();
+    });
+
+    window.addEventListener("resize", () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>

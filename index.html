@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('fonts/Minecraft.ttf');
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Minecraft';
+      background: transparent;
+      overflow: hidden;
+      color: white;
+      user-select: none;
+    }
+    panorama {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: url('images/bg.png') no-repeat center center/cover;
+      animation: movePanorama 30s linear infinite;
+      z-index: -1;
+    }
+    @keyframes movePanorama {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .logo {
+      display: block;
+      margin: 30px auto 10px;
+      width: 260px;
+      height: auto;
+      image-rendering: pixelated;
+    }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .button {
+      background: transparent;
+      background-image: url('images/button.png');
+      background-size: cover;
+      border: none;
+      color: white;
+      font-size: 18px;
+      font-family: 'Minecraft';
+      padding: 12px 16px;
+      width: 90%;
+      max-width: 220px;
+      height: auto;
+      box-sizing: border-box;
+      text-align: center;
+      text-shadow: 1px 1px black;
+      transition: transform 0.1s ease;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .button:active {
+      transform: scale(0.95);
+    }
+    .small-button {
+      font-size: 14px;
+      padding: 6px 12px;
+      max-width: 140px;
+    }
+    .preview {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .skin-image {
+      width: 100px;
+      height: auto;
+      image-rendering: pixelated;
+    }
+    .player-name {
+      font-size: 16px;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px black;
+    }
+    .version {
+      position: fixed;
+      bottom: 5px;
+      left: 10px;
+      font-size: 12px;
+      color: #ccc;
+    }
+    .credit {
+      position: fixed;
+      bottom: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <panorama></panorama>
+
+  <img src="images/logo.png" alt="MC Run Logo" class="logo">
+
+  <div class="menu">
+    <button class="button" onclick="location.href='game.html'">Game</button>
+    <button class="button" onclick="location.href='shop.html'">Shop</button>
+    <button class="button" onclick="location.href='settings.html'">Settings</button>
+    <button class="button" onclick="location.href='about.html'">About</button>
+  </div>
+
+  <div class="preview">
+    <div class="player-name" id="playerName">Steve</div>
+    <img id="skinPreview" class="skin-image" src="">
+    <button class="button small-button" onclick="location.href='dressing_room.html'">Dressing Room</button>
+  </div>
+
+  <div class="version">v1.0</div>
+  <div class="credit">By Gamer Arnab XYZ</div>
+
+  <script src="skins.js"></script>
+  <script>
+    window.onload = function () {
+      const name = localStorage.getItem("playerName") || "Steve";
+      const skinKey = localStorage.getItem("equippedSkin") || "steve";
+
+      document.getElementById("playerName").innerText = name;
+
+      const equippedSkin = skins.find(skin => skin.id === skinKey);
+      if (equippedSkin) {
+        document.getElementById("skinPreview").src = equippedSkin.image;
+      } else {
+        document.getElementById("skinPreview").src = "images/steve.png";
+      }
+    };
+  </script>
+</body>
+</html>
