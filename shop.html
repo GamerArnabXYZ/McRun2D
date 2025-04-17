@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shop</title>
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('fonts/Minecraft.ttf');
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Minecraft';
+      user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    panorama {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: url('images/bg.png') no-repeat center center/cover;
+      filter: blur(0%);
+      animation: movePanorama 30s linear infinite;
+      z-index: -1;
+    }
+    @keyframes movePanorama {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    header {
+      text-align: center;
+      color: white;
+      font-size: 30px;
+      padding: 10px;
+    }
+    .emerald-counter {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .emerald-counter img {
+      width: 14px;
+      height: 14px;
+    }
+    .shop-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 20px;
+    }
+    .skin-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid white;
+      padding: 10px;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+    .skin-card img {
+      width: 80px;
+      height: 80px;
+      image-rendering: pixelated;
+    }
+    .tick-icon, .lock-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 30px !important;
+  height: 30px !important;
+  display: block;
+  image-rendering: pixelated;
+}
+    .skin-name {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .skin-cost {
+      font-size: 12px;
+      margin: 5px 0;
+    }
+    .skin-button {
+      background: url('images/button.png') no-repeat center center/contain;
+      width: 100%;
+      height: 40px;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .skin-button:disabled {
+      color: gray;
+      cursor: default;
+    }
+    .skin-button:active {
+      transform: scale(0.98);
+    }
+    .back-button {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: url('images/button.png') no-repeat center center/contain;
+      width: 150px;
+      height: 40px;
+      color: white;
+      font-size: 14px;
+      border: none;
+    }
+    .back-button:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <panorama></panorama>
+  <header>SHOP</header>
+  <div class="emerald-counter">
+    <img src="images/emerald.png">
+    <span id="emerald-count">0</span>
+  </div>
+  <div class="shop-container" id="shop-container"></div>
+  <button class="back-button" onclick="location.href='index.html'">Back to Home</button>
+
+  <script src="skins.js"></script>
+  <script>
+    const shopContainer = document.getElementById("shop-container");
+    const emeraldCount = document.getElementById("emerald-count");
+    let emeralds = parseInt(localStorage.getItem("emeralds") || "0");
+    let ownedSkins = JSON.parse(localStorage.getItem("ownedSkins") || "[]");
+
+    function saveOwnedSkins() {
+      localStorage.setItem("ownedSkins", JSON.stringify(ownedSkins));
+    }
+
+    function updateEmeralds() {
+      emeraldCount.innerText = emeralds;
+      localStorage.setItem("emeralds", emeralds);
+    }
+
+    function renderSkins() {
+      shopContainer.innerHTML = "";
+      skins.forEach(skin => {
+        const card = document.createElement("div");
+        card.className = "skin-card";
+
+        const img = document.createElement("img");
+        img.src = skin.image;
+        card.appendChild(img);
+
+        if (ownedSkins.includes(skin.id)) {
+          const tick = document.createElement("img");
+          tick.src = "images/tick.png";
+          tick.className = "tick-icon";
+          card.appendChild(tick);
+        } else if (emeralds < skin.cost && skin.cost > 0) {
+          const lock = document.createElement("img");
+          lock.src = "images/lock.png";
+          lock.className = "lock-icon";
+          card.appendChild(lock);
+        }
+
+        const name = document.createElement("div");
+        name.className = "skin-name";
+        name.innerText = skin.name;
+        card.appendChild(name);
+
+        if (!ownedSkins.includes(skin.id)) {
+          const cost = document.createElement("div");
+          cost.className = "skin-cost";
+          cost.innerText = skin.cost === 0 ? "Free" : `Cost: ${skin.cost} Emeralds`;
+          card.appendChild(cost);
+        }
+
+        const button = document.createElement("button");
+        button.className = "skin-button";
+
+        if (ownedSkins.includes(skin.id)) {
+          button.innerText = "Owned";
+          button.disabled = true;
+        } else if (skin.cost === 0) {
+          button.innerText = "Get";
+          button.onclick = () => {
+            ownedSkins.push(skin.id);
+            saveOwnedSkins();
+            renderSkins();
+          };
+        } else if (emeralds >= skin.cost) {
+          button.innerText = "Buy";
+          button.onclick = () => {
+            emeralds -= skin.cost;
+            ownedSkins.push(skin.id);
+            updateEmeralds();
+            saveOwnedSkins();
+            renderSkins();
+          };
+        } else {
+          button.innerText = "Locked";
+          button.disabled = true;
+        }
+
+        card.appendChild(button);
+        shopContainer.appendChild(card);
+      });
+    }
+
+    updateEmeralds();
+    renderSkins();
+  </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MC Run - Settings</title>
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('Minecraft.ttf') format('truetype');
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Minecraft', sans-serif;
+      color: white;
+      background: black;
+    }
+
+    .panorama {
+      position: fixed;
+      top: 0; left: 0;
+      width: 200%;
+      height: 100%;
+      background: url('images/panorama.png') repeat-x;
+      background-size: cover;
+      animation: scroll 60s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .settings-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 5vh;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      border: 3px solid #fff;
+      border-radius: 12px;
+    }
+
+    h1 {
+      font-size: 2em;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    label {
+      font-size: 1em;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="range"] {
+      width: 100%;
+      padding: 5px;
+      font-family: 'Minecraft', sans-serif;
+      border: 2px solid #fff;
+      background: #222;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mc-button {
+      font-family: 'Minecraft', sans-serif;
+      background: #3c3c3c;
+      color: white;
+      border: 3px solid #8b8b8b;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      text-align: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .mc-button:hover {
+      background: #5a5a5a;
+    }
+
+    @media (max-width: 500px) {
+      .settings-container {
+        width: 90%;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="panorama"></div>
+  <div class="settings-container">
+    <h1>Settings</h1>
+
+    <div>
+      <label for="playerName">Player Name:</label>
+      <input type="text" id="playerName" placeholder="Steve" />
+    </div>
+
+    <div>
+      <label for="musicVolume">Music Volume:</label>
+      <input type="range" id="musicVolume" min="0" max="1" step="0.01" />
+    </div>
+
+    <div>
+      <label for="sfxVolume">Sound Effects Volume:</label>
+      <input type="range" id="sfxVolume" min="0" max="1" step="0.01" />
+    </div>
+
+    <div class="toggle-container">
+      <input type="checkbox" id="hideControls" />
+      <label for="hideControls">Hide Jump Button (Touch Mode)</label>
+    </div>
+
+    <button class="mc-button" onclick="goBack()">Back to Menu</button>
+  </div>
+
+  <script>
+    const nameInput = document.getElementById('playerName');
+    const musicSlider = document.getElementById('musicVolume');
+    const sfxSlider = document.getElementById('sfxVolume');
+    const hideToggle = document.getElementById('hideControls');
+
+    // Load existing settings
+    window.onload = () => {
+      nameInput.value = localStorage.getItem('playerName') || 'Steve';
+      musicSlider.value = localStorage.getItem('musicVolume') || 1;
+      sfxSlider.value = localStorage.getItem('sfxVolume') || 1;
+      hideToggle.checked = localStorage.getItem('hideJump') === 'true';
+    };
+
+    // Save settings on change
+    nameInput.oninput = () => {
+      localStorage.setItem('playerName', nameInput.value || 'Steve');
+    };
+
+    musicSlider.oninput = () => {
+      localStorage.setItem('musicVolume', musicSlider.value);
+    };
+
+    sfxSlider.oninput = () => {
+      localStorage.setItem('sfxVolume', sfxSlider.value);
+    };
+
+    hideToggle.onchange = () => {
+      localStorage.setItem('hideJump', hideToggle.checked);
+    };
+
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>
