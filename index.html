@@ -1,106 +1,149 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
   <style>
     @font-face {
       font-family: 'Minecraft';
       src: url('fonts/Minecraft.ttf');
     }
-    body {
+
+    html, body {
       margin: 0;
       padding: 0;
-      font-family: 'Minecraft';
-      background: transparent;
       overflow: hidden;
-      color: white;
+      background: transparent;
+      font-family: 'Minecraft';
       user-select: none;
+      touch-action: manipulation;
+      height: 100vh;
+      width: 100vw;
     }
+
     panorama {
       position: fixed;
       top: 0;
       left: 0;
+      height: 100%;
       width: 100%;
-      height: 100vh;
-      background: url('images/bg.png') no-repeat center center/cover;
-      animation: movePanorama 30s linear infinite;
+      background: url('images/bg.png') center center / cover no-repeat;
+      animation: movePanorama 40s linear infinite;
       z-index: -1;
     }
+
     @keyframes movePanorama {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100%;
+      padding-top: 20px;
+      box-sizing: border-box;
+    }
+
     .logo {
-      display: block;
-      margin: 30px auto 10px;
-      width: 260px;
-      height: auto;
+      width: 60vw;
+      max-width: 280px;
       image-rendering: pixelated;
     }
+
+    .splash {
+      font-size: 10px;
+      color: yellow;
+      margin-top: 4px;
+      margin-right: -200px;
+      transform: rotate(-10deg);
+      animation: splashFloat 2s ease-in-out infinite;
+      white-space: nowrap;
+      text-shadow: 2px 2px black;
+      max-width: 100%;
+      text-align: center;
+      overflow: hidden;
+      word-wrap: break-word;
+    }
+
+    @keyframes splashFloat {
+      0%, 100% { transform: rotate(-10deg) scale(1); }
+      50% { transform: rotate(-10deg) scale(1.1); }
+    }
+
     .menu {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
-      margin-top: 20px;
+      margin-top: 8vh;
+      gap: 12px;
+      width: 100%;
     }
+
     .button {
-      background: transparent;
+      width: 70vw;
+      max-width: 260px;
+      height: 48px;
       background-image: url('images/button.png');
-      background-size: cover;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
       border: none;
-      color: white;
-      font-size: 18px;
       font-family: 'Minecraft';
-      padding: 12px 16px;
-      width: 90%;
-      max-width: 220px;
-      height: auto;
-      box-sizing: border-box;
-      text-align: center;
+      font-size: 18px;
+      color: white;
       text-shadow: 1px 1px black;
+      line-height: 42px;
+      text-align: center;
       transition: transform 0.1s ease;
-      overflow: hidden;
-      white-space: nowrap;
+      background-color: transparent;
     }
+
     .button:active {
-      transform: scale(0.95);
+      transform: scale(0.90);
     }
+
     .small-button {
+      width: 130px;
+      height: 32px;
       font-size: 14px;
-      padding: 6px 12px;
-      max-width: 140px;
+      line-height: 32px;
     }
+
     .preview {
-      position: fixed;
+      position: absolute;
       bottom: 80px;
-      right: 20px;
+      right: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      text-align: center;
     }
+
     .skin-image {
-      width: 100px;
-      height: auto;
+      width: 80px;
       image-rendering: pixelated;
     }
+
     .player-name {
-      font-size: 16px;
-      margin-bottom: 8px;
+      font-size: 14px;
+      color: white;
+      margin-bottom: 6px;
       text-shadow: 1px 1px black;
+      max-width: 120px;
+      overflow: hidden;
     }
+
     .version {
-      position: fixed;
+      position: absolute;
       bottom: 5px;
       left: 10px;
       font-size: 12px;
       color: #ccc;
     }
+
     .credit {
-      position: fixed;
+      position: absolute;
       bottom: 5px;
       right: 10px;
       font-size: 12px;
@@ -110,14 +153,16 @@
 </head>
 <body>
   <panorama></panorama>
+  <div class="container">
+    <img src="images/logo.png" alt="MC Run Logo" class="logo">
+    <div class="splash" id="splashText">Loading splash...</div>
 
-  <img src="images/logo.png" alt="MC Run Logo" class="logo">
-
-  <div class="menu">
-    <button class="button" onclick="location.href='game.html'">Game</button>
-    <button class="button" onclick="location.href='shop.html'">Shop</button>
-    <button class="button" onclick="location.href='settings.html'">Settings</button>
-    <button class="button" onclick="location.href='about.html'">About</button>
+    <div class="menu">
+      <button class="button" onclick="location.href='game.html'">Game</button>
+      <button class="button" onclick="location.href='shop.html'">Shop</button>
+      <button class="button" onclick="location.href='settings.html'">Settings</button>
+      <button class="button" onclick="location.href='about.html'">About</button>
+    </div>
   </div>
 
   <div class="preview">
@@ -130,20 +175,52 @@
   <div class="credit">By Gamer Arnab XYZ</div>
 
   <script src="skins.js"></script>
+  <script src="splashes.js"></script>
   <script>
-    window.onload = function () {
-      const name = localStorage.getItem("playerName") || "Steve";
-      const skinKey = localStorage.getItem("equippedSkin") || "steve";
+  function autoScaleSplash(element, maxFont = 10, minFont = 6) {
+    let fontSize = maxFont;
+    element.style.whiteSpace = "normal";
+    element.style.fontSize = fontSize + "px";
 
-      document.getElementById("playerName").innerText = name;
-
-      const equippedSkin = skins.find(skin => skin.id === skinKey);
-      if (equippedSkin) {
-        document.getElementById("skinPreview").src = equippedSkin.image;
-      } else {
-        document.getElementById("skinPreview").src = "images/steve.png";
+    // Wait for rendering
+    setTimeout(() => {
+      const maxHeight = fontSize * 3.2;
+      while ((element.scrollWidth > element.clientWidth || element.scrollHeight > maxHeight) && fontSize > minFont) {
+        fontSize--;
+        element.style.fontSize = fontSize + "px";
       }
-    };
-  </script>
+    }, 0);
+  }
+
+  function autoScaleName(element, maxFont = 10, minFont = 8) {
+    let fontSize = maxFont;
+    element.style.fontSize = fontSize + "px";
+    while (element.scrollWidth > element.clientWidth && fontSize > minFont) {
+      fontSize--;
+      element.style.fontSize = fontSize + "px";
+    }
+  }
+
+  function scaleSplashAndName() {
+    autoScaleSplash(document.getElementById("splashText"));
+    autoScaleName(document.getElementById("playerName"));
+  }
+
+  window.onload = function () {
+    const name = localStorage.getItem("playerName") || "Steve";
+    const skinKey = localStorage.getItem("equippedSkin") || "steve";
+    document.getElementById("playerName").innerText = name;
+
+    const equippedSkin = skins.find(s => s.id === skinKey);
+    document.getElementById("skinPreview").src = equippedSkin ? equippedSkin.image : "images/steve.png";
+
+    const splash = splashTexts[Math.floor(Math.random() * splashTexts.length)];
+    document.getElementById("splashText").innerText = splash;
+
+    scaleSplashAndName();
+  };
+
+  window.addEventListener("resize", scaleSplashAndName);
+</script>
 </body>
 </html>
