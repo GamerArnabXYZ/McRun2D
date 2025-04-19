@@ -3,6 +3,7 @@ const splashTexts = [
   "Don't dig straight down!",
   "Watch out for Creepers!",
   "Now with emeralds!",
+  "I.....AM STEVE!!!",
   "Craft, jump, repeat!",
   "Made with pixels and passion!",
   "Punch trees to begin!",
