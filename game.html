@@ -1,167 +1,225 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MC Run - Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="fonts/Minecraft.ttf">
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: skyblue;
-      font-family: 'Minecraft', sans-serif;
-    }
-
-    canvas {
-      display: block;
-      background: #87ceeb; /* sky blue */
-      touch-action: manipulation;
-    }
-
-    @font-face {
-      font-family: 'Minecraft';
-      src: url('fonts/Minecraft.ttf');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    canvas { display: block; background: #000; }
+    body { overflow: hidden; font-family: 'Minecraft', sans-serif; }
+    #jumpBtn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      background: url('images/jump.png') no-repeat center/contain;
+      border: none;
+      display: none;
     }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
+  <button id="jumpBtn"></button>  <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const jumpBtn = document.getElementById('jumpBtn');
 
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+let width = window.innerWidth;
+let height = window.innerHeight;
+canvas.width = width;
+canvas.height = height;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
+const scale = height / 100;
+const blockSize = scale * 5;
+const groundHeight = blockSize * 2;
 
-    const blockSize = height / 10;
+let player = {
+  x: blockSize * 3,
+  y: height - groundHeight - blockSize * 3,
+  width: blockSize,
+  height: blockSize * 3,
+  velocityY: 0,
+  isJumping: false
+};
 
-    // Load images
-    const playerImg = new Image();
-    const grassImg = new Image();
+const gravity = 0.4 * scale;
+const jumpForce = -8 * scale;
+let gameSpeed = 2.5 * scale;
+
+let tntBlocks = [];
+let score = 0;
+let emeralds = 0;
+let gameOver = false;
+let isNight = false;
+let tick = 0;
+
+const grassImg = new Image();
+grassImg.src = 'images/grass.png';
+const moonImg = new Image();
+moonImg.src = 'images/moon.png';
+const sunImg = new Image();
+sunImg.src = 'images/sun.png';
+const zombieImg = new Image();
+zombieImg.src = 'images/zombie.png';
+
+const playerImg = new Image();
+const skinKey = localStorage.getItem("equippedSkin") || "steve";
+const equippedSkin = typeof skins !== 'undefined' ? skins.find(s => s.id === skinKey) : null;
+playerImg.src = equippedSkin ? equippedSkin.image : 'images/steve.png';
+
+function resize() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+}
+window.addEventListener('resize', resize);
+
+function drawSky() {
+  ctx.fillStyle = isNight ? '#001' : '#87CEEB';
+  ctx.fillRect(0, 0, width, height);
+  if (isNight) {
+    for (let i = 0; i < 100; i++) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(Math.random() * width, Math.random() * height / 2, 2, 2);
+    }
+    ctx.drawImage(moonImg, width - 100, 40, 60, 60);
+  } else {
+    ctx.drawImage(sunImg, width - 100, 40, 60, 60);
+  }
+}
+
+function drawGround() {
+  for (let i = 0; i < width; i += blockSize) {
+    ctx.drawImage(grassImg, i, height - groundHeight, blockSize, groundHeight);
+  }
+}
+
+function drawPlayer() {
+  ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+}
+
+function drawObstacles() {
+  tntBlocks.forEach(tnt => {
     const tntImg = new Image();
-    playerImg.src = "images/player.png";
-    grassImg.src = "images/grass.png";
-    tntImg.src = "images/tnt.png";
+    tntImg.src = 'images/tnt.png';
+    ctx.drawImage(tntImg, tnt.x, tnt.y, tnt.width, tnt.height);
+  });
+}
 
-    // Game variables
-    let player = {
-      x: blockSize * 2,
-      y: height - blockSize * 5,
+function drawZombie() {
+  if (isNight) {
+    ctx.drawImage(zombieImg, width / 2, height - groundHeight - blockSize * 3, blockSize, blockSize * 3);
+  }
+}
+
+function drawUI() {
+  ctx.font = `${scale * 2.2}px Minecraft`;
+  ctx.fillStyle = 'white';
+  ctx.fillText(`Score: ${score}`, 20, 30);
+  ctx.fillText(`Emeralds: ${emeralds}`, 20, 60);
+}
+
+function drawGameOver() {
+  ctx.fillStyle = 'rgba(100,0,0,0.6)';
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = 'white';
+  ctx.font = `${scale * 5}px Minecraft`;
+  ctx.textAlign = 'center';
+  ctx.fillText("YOU DIED!", width / 2, height / 2 - 60);
+  ctx.font = `${scale * 2}px Minecraft`;
+  const name = localStorage.getItem("playerName") || "Steve";
+  ctx.fillText(`${name} was blown up by Block of TNT`, width / 2, height / 2 - 10);
+  ctx.fillStyle = 'yellow';
+  ctx.fillText(`Score: ${score}`, width / 2, height / 2 + 30);
+}
+
+function updatePlayer() {
+  player.velocityY += gravity;
+  player.y += player.velocityY;
+  if (player.y + player.height >= height - groundHeight) {
+    player.y = height - groundHeight - player.height;
+    player.isJumping = false;
+    player.velocityY = 0;
+  }
+}
+
+function spawnObstacle() {
+  if (Math.random() < 0.02) {
+    tntBlocks.push({
+      x: width,
+      y: height - groundHeight - blockSize * 2,
       width: blockSize,
-      height: blockSize * 3,
-      vy: 0,
-      jumpForce: blockSize * 1.6,
-      grounded: false
-    };
-
-    let gravity = blockSize * 0.08;
-    let scrollSpeed = blockSize * 0.1;
-
-    let ground = {
-      y: height - blockSize * 2,
       height: blockSize * 2
-    };
-
-    let tnts = [
-      { x: width + 200, width: blockSize, height: blockSize }
-    ];
-
-    let score = 0;
-    let emeralds = 0;
-
-    function resetGame() {
-      player.y = height - ground.height - player.height;
-      player.vy = 0;
-      tnts = [{ x: width + 200, width: blockSize, height: blockSize }];
-      score = 0;
-      emeralds = 0;
-    }
-
-    function jump() {
-      if (player.grounded) {
-        player.vy = -player.jumpForce;
-        player.grounded = false;
-      }
-    }
-
-    function isColliding(a, b) {
-      return (
-        a.x < b.x + b.width &&
-        a.x + a.width > b.x &&
-        a.y < b.y + b.height &&
-        a.y + a.height > b.y
-      );
-    }
-
-    function gameLoop() {
-      ctx.clearRect(0, 0, width, height);
-
-      // Draw grass
-      for (let i = 0; i < Math.ceil(width / blockSize); i++) {
-        ctx.drawImage(grassImg, i * blockSize, ground.y, blockSize, ground.height);
-      }
-
-      // Player gravity
-      player.vy += gravity;
-      player.y += player.vy;
-
-      if (player.y + player.height >= ground.y) {
-        player.y = ground.y - player.height;
-        player.vy = 0;
-        player.grounded = true;
-      }
-
-      // Draw player
-      ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
-
-      // TNT logic
-      tnts.forEach(tnt => {
-        tnt.x -= scrollSpeed;
-        ctx.drawImage(tntImg, tnt.x, ground.y - tnt.height, tnt.width, tnt.height);
-
-        if (isColliding(player, {
-          x: tnt.x + blockSize * 0.1,
-          y: ground.y - tnt.height,
-          width: tnt.width - blockSize * 0.2,
-          height: tnt.height
-        })) {
-          alert("You Died!\nScore: " + score);
-          resetGame();
-        }
-
-        if (tnt.x + tnt.width < 0) {
-          score++;
-          emeralds = Math.floor(score / 10);
-          tnt.x = width + Math.random() * width;
-        }
-      });
-
-      // UI
-      ctx.fillStyle = "#000";
-      ctx.font = blockSize * 0.8 + "px Minecraft";
-      ctx.fillText("Score: " + score, 20, 40);
-      ctx.fillText("Emeralds: " + emeralds, 20, 80);
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    // Handle jump
-    window.addEventListener("touchstart", jump);
-    window.addEventListener("keydown", e => {
-      if (e.code === "Space") jump();
     });
+  }
+}
 
-    window.addEventListener("resize", () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    });
+function updateObstacles() {
+  tntBlocks.forEach(tnt => tnt.x -= gameSpeed);
+  tntBlocks = tntBlocks.filter(tnt => tnt.x + tnt.width > 0);
 
-    gameLoop();
-  </script>
-</body>
+  tntBlocks.forEach(tnt => {
+    if (
+      player.x < tnt.x + tnt.width &&
+      player.x + player.width > tnt.x &&
+      player.y < tnt.y + tnt.height &&
+      player.y + player.height > tnt.y
+    ) {
+      gameOver = true;
+    } else if (!tnt.passed && tnt.x + tnt.width < player.x) {
+      tnt.passed = true;
+      score++;
+      if (score % 10 === 0) emeralds++;
+    }
+  });
+}
+
+function gameLoop() {
+  if (!gameOver) {
+    tick++;
+    isNight = (Math.floor(tick / 600) % 2) === 1;
+    ctx.clearRect(0, 0, width, height);
+    drawSky();
+    drawGround();
+    drawZombie();
+    updatePlayer();
+    spawnObstacle();
+    updateObstacles();
+    drawPlayer();
+    drawObstacles();
+    drawUI();
+  } else {
+    drawGameOver();
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+function doJump() {
+  if (!player.isJumping && !gameOver) {
+    player.velocityY = jumpForce;
+    player.isJumping = true;
+  } else if (gameOver) {
+    location.reload();
+  }
+}
+
+// Jump control setting
+const jumpControl = localStorage.getItem("JumpControl") || "JumpButton_On";
+if (jumpControl === "JumpButton_On") {
+  jumpBtn.style.display = 'block';
+  jumpBtn.addEventListener('click', doJump);
+} else {
+  canvas.addEventListener('touchstart', doJump);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'ArrowUp') doJump();
+});
+
+gameLoop();
+  </script></body>
 </html>
