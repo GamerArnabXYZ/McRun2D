@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unsupported</title>
+  <style>
+    @font-face {
+      font-family: Minecraft;
+      src: url('fonts/Minecraft.ttf');
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Minecraft, sans-serif;
+      background: url('images/bg.png') center/cover fixed;
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100vh;
+      background-blend-mode: multiply;
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+    .container {
+      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      border-radius: 20px;
+      margin: auto;
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    button {
+      background: url('images/button.png') center/contain no-repeat;
+      width: 200px;
+      height: 40px;
+      border: none;
+      color: white;
+      font-family: Minecraft;
+      font-size: 18px;
+      margin-top: 20px;
+      cursor: pointer;
+      outline: none;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Unsupported Device</h1>
+    <p id="reason">Checking device...</p>
+    <button onclick="retry()">Retry</button>
+  </div>
+
+  <script>
+    function getReasonMessage(code) {
+      switch(code) {
+        case "nonMobile":
+          return "Please use a mobile device to play MC Run.";
+        case "landscape":
+          return "Please rotate your device to Portrait mode.";
+        case "desktopMode":
+          return "Please disable Desktop Mode in your browser.";
+        case "noTouch":
+          return "Touchscreen is required to play this game.";
+        case "emulator":
+          return "Emulators or fake environments are not supported.";
+        default:
+          return "Unsupported device or configuration.";
+      }
+    }
+
+    function retry() {
+      location.href = "index.html";
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const reasonCode = urlParams.get("reason");
+    document.getElementById("reason").innerText = getReasonMessage(reasonCode);
+  </script>
+</body>
+</html>
