@@ -47,7 +47,8 @@
       margin-bottom: 2vh;
     }
     .skin-img {
-      width: 42vw;
+      width: 95vw;
+      height: 60vw;
       max-width: 190px;
       image-rendering: pixelated;
     }
@@ -58,22 +59,27 @@
       margin: 3vh 0 1.5vh 0;
     }
     .btn {
+      width: 70vw;
+      max-width: 260px;
+      height: 48px;
       background-image: url('images/button.png');
-      background-size: cover;
-      background-position: center;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
       border: none;
-      font-size: 4.5vw;
-      padding: 2vh 6vw;
+      font-family: 'Minecraft';
+      font-size: 18px;
       color: white;
       text-shadow: 1px 1px black;
-      image-rendering: pixelated;
+      line-height: 42px;
       text-align: center;
+      transition: transform 0.1s ease;
+      background-color: transparent;
     }
     .btn:active {
-      transform: scale(0.96);
+      transform: scale(0.85);
     }
     .small-btn {
-      width: 22vw;
+      width: 17vw;
     }
     .wide-btn {
       width: 70vw;
@@ -145,5 +151,52 @@
 
     updateSkinDisplay();
   </script>
+  <script>
+function isTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
+
+function isMobileOS() {
+  const ua = navigator.userAgent.toLowerCase();
+  return /android|iphone|ipad|ipod/i.test(ua);
+}
+
+function isMobileInDesktopMode() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const aspectRatio = width / height;
+  return isMobileOS() && aspectRatio > 1.3;
+}
+
+function isLandscapeMode() {
+  return window.innerWidth > window.innerHeight;
+}
+
+function isEmulatorOrFakeTouch() {
+  const isMobileUA = isMobileOS();
+  const noTouch = !isTouchDevice();
+  const screenSizeSuspect = screen.width > 800 || screen.height > 800;
+  return isMobileUA && noTouch && screenSizeSuspect;
+}
+
+function getRestrictionReason() {
+  if (!isMobileOS()) return "nonMobile";
+  if (isLandscapeMode()) return "landscape";
+  if (isMobileInDesktopMode()) return "desktopMode";
+  if (!isTouchDevice()) return "noTouch";
+  if (isEmulatorOrFakeTouch()) return "emulator";
+  return null;
+}
+
+function enforceMobileMode() {
+  const reason = getRestrictionReason();
+  if (reason) {
+    window.location.href = `unsupported.html?reason=${reason}`;
+  }
+}
+
+window.addEventListener("load", enforceMobileMode);
+window.addEventListener("resize", enforceMobileMode);
+</script>
 </body>
 </html>
