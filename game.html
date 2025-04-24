@@ -1,225 +1,263 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MC Run - Game</title>
-  <link rel="stylesheet" href="fonts/Minecraft.ttf">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    canvas { display: block; background: #000; }
-    body { overflow: hidden; font-family: 'Minecraft', sans-serif; }
-    #jumpBtn {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      width: 80px;
-      height: 80px;
-      background: url('images/jump.png') no-repeat center/contain;
-      border: none;
-      display: none;
-    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }body {
+  overflow: hidden;
+  background: linear-gradient(to top, #5ec6ff, #b3e5fc);
+  font-family: 'Minecraftia', sans-serif;
+  user-select: none;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 100px;
+  background: url("images/grass.png") repeat-x;
+  background-size: contain;
+  animation: moveGround 3s linear infinite;
+}
+
+@keyframes moveGround {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+#player {
+  position: absolute;
+  bottom: 100px;
+  left: 50px;
+  width: calc(100vh / 8);
+  height: calc(100vh / 4);
+  background: no-repeat center/cover;
+  transition: bottom 0.2s;
+}
+
+.obstacle {
+  position: absolute;
+  bottom: 100px;
+  width: 60px;
+  height: 60px;
+  background: url("images/tnt.png") no-repeat;
+  background-size: cover;
+  animation: moveObstacle 3s linear infinite;
+}
+
+@keyframes moveObstacle {
+  0% { right: -60px; }
+  100% { right: 100vw; }
+}
+
+.cloud {
+  position: absolute;
+  top: 20px;
+  width: 100px;
+  height: 60px;
+  opacity: 0.6;
+  background: white;
+  border-radius: 50%;
+}
+
+#scoreboard, #emeraldboard {
+  position: absolute;
+  top: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  font-size: 18px;
+  color: white;
+}
+
+#scoreboard {
+  left: 10px;
+}
+
+#emeraldboard {
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#emeraldboard img {
+  width: 20px;
+  height: 20px;
+}
+
+#jump-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  background: url("images/jump.png") no-repeat center;
+  background-size: contain;
+  border: none;
+  outline: none;
+}
+
+#death-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(150, 0, 0, 0.8);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.death-text {
+  color: white;
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.death-subtext {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.death-score {
+  color: yellow;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.death-buttons img {
+  width: 120px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas"></canvas>
-  <button id="jumpBtn"></button>  <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const jumpBtn = document.getElementById('jumpBtn');
+  <div id="game-container">
+    <div class="ground"></div>
+    <div id="player"></div>
+    <div class="obstacle" style="right: -100px;"></div>
+    <div class="cloud" style="left: 20%;"></div>
+    <div class="cloud" style="left: 60%; top: 60px; width: 80px; height: 50px; border-radius: 15px;"></div><div id="scoreboard">Score: 0</div>
+<div id="emeraldboard">
+  <img src="images/emerald.png" alt="Emerald">
+  <span>0</span>
+</div>
 
-let width = window.innerWidth;
-let height = window.innerHeight;
-canvas.width = width;
-canvas.height = height;
+<button id="jump-button"></button>
 
-const scale = height / 100;
-const blockSize = scale * 5;
-const groundHeight = blockSize * 2;
+<div id="death-screen">
+  <div class="death-text">YOU DIED</div>
+  <div class="death-subtext" id="death-message">Steve was blown up by Block of TNT</div>
+  <div class="death-score" id="death-score">Score: 0</div>
+  <div class="death-buttons">
+    <img src="images/respwn.png" onclick="restartGame()" alt="Respawn">
+    <img src="images/exit.png" onclick="goToHome()" alt="Exit">
+  </div>
+</div>
 
-let player = {
-  x: blockSize * 3,
-  y: height - groundHeight - blockSize * 3,
-  width: blockSize,
-  height: blockSize * 3,
-  velocityY: 0,
-  isJumping: false
-};
+  </div>  <script src="skins.js"></script>  <script>
+    let score = 0;
+    let emeralds = 0;
+    let isJumping = false;
+    let player = document.getElementById('player');
+    let obstacle = document.querySelector('.obstacle');
+    let scoreText = document.getElementById('scoreboard');
+    let emeraldText = document.querySelector('#emeraldboard span');
+    let deathScreen = document.getElementById('death-screen');
+    let deathMessage = document.getElementById('death-message');
+    let deathScore = document.getElementById('death-score');
+    let playerName = localStorage.getItem('playerName') || 'Steve';
+    let equippedSkin = localStorage.getItem('equippedSkin') || 'steve';
 
-const gravity = 0.4 * scale;
-const jumpForce = -8 * scale;
-let gameSpeed = 2.5 * scale;
-
-let tntBlocks = [];
-let score = 0;
-let emeralds = 0;
-let gameOver = false;
-let isNight = false;
-let tick = 0;
-
-const grassImg = new Image();
-grassImg.src = 'images/grass.png';
-const moonImg = new Image();
-moonImg.src = 'images/moon.png';
-const sunImg = new Image();
-sunImg.src = 'images/sun.png';
-const zombieImg = new Image();
-zombieImg.src = 'images/zombie.png';
-
-const playerImg = new Image();
-const skinKey = localStorage.getItem("equippedSkin") || "steve";
-const equippedSkin = typeof skins !== 'undefined' ? skins.find(s => s.id === skinKey) : null;
-playerImg.src = equippedSkin ? equippedSkin.image : 'images/steve.png';
-
-function resize() {
-  width = window.innerWidth;
-  height = window.innerHeight;
-  canvas.width = width;
-  canvas.height = height;
-}
-window.addEventListener('resize', resize);
-
-function drawSky() {
-  ctx.fillStyle = isNight ? '#001' : '#87CEEB';
-  ctx.fillRect(0, 0, width, height);
-  if (isNight) {
-    for (let i = 0; i < 100; i++) {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(Math.random() * width, Math.random() * height / 2, 2, 2);
+    function setPlayerSkin() {
+      const skin = skins.find(s => s.id === equippedSkin);
+      if (skin) player.style.backgroundImage = `url('${skin.image}')`;
     }
-    ctx.drawImage(moonImg, width - 100, 40, 60, 60);
-  } else {
-    ctx.drawImage(sunImg, width - 100, 40, 60, 60);
-  }
-}
 
-function drawGround() {
-  for (let i = 0; i < width; i += blockSize) {
-    ctx.drawImage(grassImg, i, height - groundHeight, blockSize, groundHeight);
-  }
-}
+    setPlayerSkin();
 
-function drawPlayer() {
-  ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
-}
+    function jump() {
+      if (isJumping) return;
+      isJumping = true;
+      let jumpHeight = window.innerHeight / 4;
 
-function drawObstacles() {
-  tntBlocks.forEach(tnt => {
-    const tntImg = new Image();
-    tntImg.src = 'images/tnt.png';
-    ctx.drawImage(tntImg, tnt.x, tnt.y, tnt.width, tnt.height);
-  });
-}
-
-function drawZombie() {
-  if (isNight) {
-    ctx.drawImage(zombieImg, width / 2, height - groundHeight - blockSize * 3, blockSize, blockSize * 3);
-  }
-}
-
-function drawUI() {
-  ctx.font = `${scale * 2.2}px Minecraft`;
-  ctx.fillStyle = 'white';
-  ctx.fillText(`Score: ${score}`, 20, 30);
-  ctx.fillText(`Emeralds: ${emeralds}`, 20, 60);
-}
-
-function drawGameOver() {
-  ctx.fillStyle = 'rgba(100,0,0,0.6)';
-  ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = 'white';
-  ctx.font = `${scale * 5}px Minecraft`;
-  ctx.textAlign = 'center';
-  ctx.fillText("YOU DIED!", width / 2, height / 2 - 60);
-  ctx.font = `${scale * 2}px Minecraft`;
-  const name = localStorage.getItem("playerName") || "Steve";
-  ctx.fillText(`${name} was blown up by Block of TNT`, width / 2, height / 2 - 10);
-  ctx.fillStyle = 'yellow';
-  ctx.fillText(`Score: ${score}`, width / 2, height / 2 + 30);
-}
-
-function updatePlayer() {
-  player.velocityY += gravity;
-  player.y += player.velocityY;
-  if (player.y + player.height >= height - groundHeight) {
-    player.y = height - groundHeight - player.height;
-    player.isJumping = false;
-    player.velocityY = 0;
-  }
-}
-
-function spawnObstacle() {
-  if (Math.random() < 0.02) {
-    tntBlocks.push({
-      x: width,
-      y: height - groundHeight - blockSize * 2,
-      width: blockSize,
-      height: blockSize * 2
-    });
-  }
-}
-
-function updateObstacles() {
-  tntBlocks.forEach(tnt => tnt.x -= gameSpeed);
-  tntBlocks = tntBlocks.filter(tnt => tnt.x + tnt.width > 0);
-
-  tntBlocks.forEach(tnt => {
-    if (
-      player.x < tnt.x + tnt.width &&
-      player.x + player.width > tnt.x &&
-      player.y < tnt.y + tnt.height &&
-      player.y + player.height > tnt.y
-    ) {
-      gameOver = true;
-    } else if (!tnt.passed && tnt.x + tnt.width < player.x) {
-      tnt.passed = true;
-      score++;
-      if (score % 10 === 0) emeralds++;
+      player.style.bottom = `${100 + jumpHeight}px`;
+      setTimeout(() => {
+        player.style.bottom = '100px';
+        isJumping = false;
+      }, 400);
     }
-  });
-}
 
-function gameLoop() {
-  if (!gameOver) {
-    tick++;
-    isNight = (Math.floor(tick / 600) % 2) === 1;
-    ctx.clearRect(0, 0, width, height);
-    drawSky();
-    drawGround();
-    drawZombie();
-    updatePlayer();
-    spawnObstacle();
-    updateObstacles();
-    drawPlayer();
-    drawObstacles();
-    drawUI();
-  } else {
-    drawGameOver();
-  }
-  requestAnimationFrame(gameLoop);
-}
+    function checkCollision() {
+      let playerRect = player.getBoundingClientRect();
+      let obsRect = obstacle.getBoundingClientRect();
 
-function doJump() {
-  if (!player.isJumping && !gameOver) {
-    player.velocityY = jumpForce;
-    player.isJumping = true;
-  } else if (gameOver) {
-    location.reload();
-  }
-}
+      if (
+        playerRect.right > obsRect.left &&
+        playerRect.left < obsRect.right &&
+        playerRect.bottom > obsRect.top &&
+        playerRect.top < obsRect.bottom
+      ) {
+        if (!isJumping) endGame();
+      } else {
+        if (parseInt(obstacle.style.right) > window.innerWidth - 100) {
+          score++;
+          scoreText.innerText = `Score: ${score}`;
+          if (score % 10 === 0) {
+            emeralds++;
+            emeraldText.innerText = emeralds;
+          }
+        }
+      }
+    }
 
-// Jump control setting
-const jumpControl = localStorage.getItem("JumpControl") || "JumpButton_On";
-if (jumpControl === "JumpButton_On") {
-  jumpBtn.style.display = 'block';
-  jumpBtn.addEventListener('click', doJump);
-} else {
-  canvas.addEventListener('touchstart', doJump);
-}
+    function endGame() {
+      deathScreen.style.display = 'flex';
+      deathMessage.innerText = `${playerName} was blown up by Block of TNT`;
+      deathScore.innerText = `Score: ${score}`;
+      clearInterval(gameLoop);
+    }
 
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') doJump();
-});
+    function restartGame() {
+      window.location.reload();
+    }
 
-gameLoop();
+    function goToHome() {
+      window.location.href = "index.html";
+    }
+
+    document.getElementById('jump-button').addEventListener('click', jump);
+
+    let gameLoop = setInterval(() => {
+      let right = parseInt(obstacle.style.right) || -100;
+      right += 5;
+      obstacle.style.right = right + 'px';
+      if (right > window.innerWidth + 60) obstacle.style.right = '-60px';
+      checkCollision();
+    }, 30);
   </script></body>
 </html>
