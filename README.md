@@ -100,7 +100,7 @@ Until then, you can:
 - Clone the repository using Git:
 
 ```bash
-git clone https://github.com/yourusername/mc-run.git
+git clone https://github.com/yourusername/mc-run.git```
 
 ---
 
