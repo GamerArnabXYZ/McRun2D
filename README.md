@@ -99,8 +99,6 @@ Until then, you can:
 - Download the repository as a ZIP and open `index.html` in your mobile or tablet browser, or
 - Clone the repository using Git:
 
-```bash
-git clone https://github.com/yourusername/mc-run.git```
 
 ---
 
@@ -131,12 +129,6 @@ Respect the spirit of open-source contribution by acknowledging the creator.
 
 You are welcome to learn, contribute, or be inspired — but not to claim this work as your own without permission.
 
-
-
----
-
-> "Tradition meets Innovation."
-MC Run is a tribute to the past, built with love for the future.
 
 
 ---
