@@ -1,382 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <style>
-    @font-face {
-      font-family: 'Minecraft';
-      src: url('fonts/Minecraft.ttf') format('truetype');
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>Setting | CRAFTRUNNER.IO</title>
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('fonts/Minecraft.ttf') format('truetype');
+        }
 
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Minecraft', sans-serif;
-      background: transparent;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      overflow: hidden;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Minecraft', sans-serif;
+            background: transparent;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
 
-    .panorama {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      background: url('images/bg.png') center center / cover no-repeat;
-      animation: movePanorama 40s linear infinite;
-      z-index: -1;
-      transition: filter 0.3s ease;
-    }
+        .panorama {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: url('images/bg.png') center center / cover no-repeat;
+            animation: movePanorama 40s linear infinite;
+            z-index: -1;
+            transition: filter 0.3s ease;
+        }
 
-    @keyframes movePanorama {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+        @keyframes movePanorama {
+            0% {
+                background-position: 0% 50%;
+            }
 
-    .settings-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.5);
-      max-width: 320px;
-      border: 3px solid #fff;
-      border-radius: 12px;
-      transition: filter 0.3s ease;
-      z-index: 1;
-    }
+            50% {
+                background-position: 100% 50%;
+            }
 
-    label {
-      font-size: 1em;
-      margin-bottom: 3px;
-    }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
 
-    input[type="text"] {
-      width: 100%;
-      padding: 5px;
-      font-family: 'Minecraft', sans-serif;
-      border: 2px solid #fff;
-      background: #222;
-      color: white;
-      border-radius: 5px;
-    }
+        .settings-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            max-width: 320px;
+            border: 3px solid #fff;
+            border-radius: 12px;
+            transition: filter 0.3s ease;
+            z-index: 1;
+        }
 
-    .slider-row {
-      width: 100%;
-    }
+        label {
+            font-size: 1em;
+            margin-bottom: 3px;
+        }
 
-    .slider-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 3px;
-    }
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            font-family: 'Minecraft', sans-serif;
+            border: 2px solid #fff;
+            background: #222;
+            color: white;
+            border-radius: 5px;
+        }
 
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 8px;
-      background: #555;
-      border: 2px solid #888;
-    }
+        .slider-row {
+            width: 100%;
+        }
 
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      height: 18px;
-      width: 8px;
-      background: white;
-      border: 2px solid black;
-      cursor: pointer;
-    }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
 
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #555;
+            border: 2px solid #888;
+        }
 
-    .mc-toggle-switch {
-      width: 48px;
-      height: 20px;
-      background: #444;
-      border: 2px solid #aaa;
-      position: relative;
-      cursor: pointer;
-    }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 8px;
+            background: white;
+            border: 2px solid black;
+            cursor: pointer;
+        }
 
-    .mc-toggle-switch.on {
-      background: #2ecc71;
-    }
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
 
-    .mc-toggle-knob {
-      width: 20px;
-      height: 20px;
-      background: #fff;
-      border: 2px solid #000;
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      transition: left 0.2s;
-    }
+        .mc-toggle-switch {
+            width: 48px;
+            height: 20px;
+            background: #444;
+            border: 2px solid #aaa;
+            position: relative;
+            cursor: pointer;
+        }
 
-    .mc-toggle-switch.on .mc-toggle-knob {
-      left: 26px;
-    }
+        .mc-toggle-switch.on {
+            background: #2ecc71;
+        }
 
-    .mc-button {
-      width: 70vw;
-      max-width: 260px;
-      height: 48px;
-      background-image: url('images/button.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border: none;
-      font-family: 'Minecraft';
-      font-size: 18px;
-      color: white;
-      text-shadow: 1px 1px black;
-      line-height: 42px;
-      text-align: center;
-      transition: transform 0.1s ease;
-      background-color: transparent;
-    }
+        .mc-toggle-knob {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border: 2px solid #000;
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            transition: left 0.2s;
+        }
 
-    .mc-button:active {
-      transform: scale(0.85);
-    }
+        .mc-toggle-switch.on .mc-toggle-knob {
+            left: 26px;
+        }
 
-    #popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(6px);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 5;
-      transition: opacity 0.3s ease;
-    }
+        .mc-button {
+            width: 70vw;
+            max-width: 260px;
+            height: 48px;
+            background-image: url('images/button.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border: none;
+            font-family: 'Minecraft';
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px black;
+            line-height: 42px;
+            text-align: center;
+            transition: transform 0.1s ease;
+            background-color: transparent;
+        }
 
-    #popup-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
+        .mc-button:active {
+            transform: scale(0.85);
+        }
 
-    /* Popup */
-    .popup {
-      position: fixed;
-      bottom: -300px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.85);
-      border: 2px solid white;
-      padding: 20px;
-      text-align: center;
-      width: 80%;
-      max-width: 300px;
-      color: white;
-      transition: bottom 0.4s ease;
-      z-index: 10;
-    }
+        #popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
 
-    .popup.active {
-      bottom: 30%;
-    }
+        #popup-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-    .popup button {
-      width: 70vw;
-      max-width: 260px;
-      height: 48px;
-      background-image: url('images/button.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border: none;
-      font-family: 'Minecraft';
-      font-size: 18px;
-      color: white;
-      text-shadow: 1px 1px black;
-      line-height: 42px;
-      text-align: center;
-      transition: transform 0.1s ease;
-      background-color: transparent;
-    }
+        /* Popup */
+        .popup {
+            position: fixed;
+            bottom: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid white;
+            padding: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            color: white;
+            transition: bottom 0.4s ease;
+            z-index: 10;
+        }
 
-    .popup button:active {
-      transform: scale(0.85);
-    }
-  </style>
+        .popup.active {
+            bottom: 30%;
+        }
+
+        .popup button {
+            width: 70vw;
+            max-width: 260px;
+            height: 48px;
+            background-image: url('images/button.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border: none;
+            font-family: 'Minecraft';
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px black;
+            line-height: 42px;
+            text-align: center;
+            transition: transform 0.1s ease;
+            background-color: transparent;
+        }
+
+        .popup button:active {
+            transform: scale(0.85);
+        }
+    </style>
 </head>
+
 <body>
-  <div class="panorama" id="panorama"></div>
+    <div class="panorama" id="panorama"></div>
 
-  <div class="settings-container" id="settingsBox">
-    <div>
-      <label for="playerName">Player Name:</label>
-      <input type="text" id="playerName" placeholder="Steve" />
+    <div class="settings-container" id="settingsBox">
+        <div>
+            <label for="playerName">Player Name:</label>
+            <input type="text" id="playerName" placeholder="Steve" />
+        </div>
+
+        <div class="slider-row">
+            <div class="slider-label">
+                <label for="musicVolume">Music Volume</label>
+                <span id="musicPercent">100%</span>
+            </div>
+            <input type="range" id="musicVolume" min="0" max="1" step="0.01" />
+        </div>
+
+        <div class="slider-row">
+            <div class="slider-label">
+                <label for="sfxVolume">Button Sound</label>
+                <span id="sfxPercent">100%</span>
+            </div>
+            <input type="range" id="sfxVolume" min="0" max="1" step="0.01" />
+        </div>
+
+        <div class="toggle-row">
+            <label for="jumpToggle">Jump Button</label>
+            <div id="jumpToggle" class="mc-toggle-switch">
+                <div class="mc-toggle-knob"></div>
+            </div>
+        </div>
+
+        <button class="mc-button" onclick="goBack()">Back to Menu</button>
+        <button class="mc-button" onclick="showPopup()">Reset Settings</button>
     </div>
 
-    <div class="slider-row">
-      <div class="slider-label">
-        <label for="musicVolume">Music Volume</label>
-        <span id="musicPercent">100%</span>
-      </div>
-      <input type="range" id="musicVolume" min="0" max="1" step="0.01" />
+    <div id="popup-overlay"></div>
+    <div class="popup" id="reset-popup">
+        <p>Are you sure you want to reset all data?</p>
+        <button onclick="confirmReset()">Yes</button>
+        <button onclick="closePopup()">No</button>
     </div>
 
-    <div class="slider-row">
-      <div class="slider-label">
-        <label for="sfxVolume">Button Sound</label>
-        <span id="sfxPercent">100%</span>
-      </div>
-      <input type="range" id="sfxVolume" min="0" max="1" step="0.01" />
-    </div>
+    <script>
+        // Redirect if not logged in
+        if (!localStorage.getItem("playerName")) {
+            window.location.href = "index.html";
+        }
+        const nameInput = document.getElementById('playerName');
+        const musicSlider = document.getElementById('musicVolume');
+        const sfxSlider = document.getElementById('sfxVolume');
+        const musicPercent = document.getElementById('musicPercent');
+        const sfxPercent = document.getElementById('sfxPercent');
+        const jumpToggle = document.getElementById('jumpToggle');
+        const resetPopup = document.getElementById('resetPopup');
+        const panorama = document.getElementById('panorama');
+        const settingsBox = document.getElementById('settingsBox');
 
-    <div class="toggle-row">
-      <label for="jumpToggle">Jump Button</label>
-      <div id="jumpToggle" class="mc-toggle-switch">
-        <div class="mc-toggle-knob"></div>
-      </div>
-    </div>
+        window.onload = () => {
+            nameInput.value = localStorage.getItem('playerName');
+            musicSlider.value = localStorage.getItem('musicVolume') || 1;
+            sfxSlider.value = localStorage.getItem('sfxVolume') || 1;
+            updatePercent();
+            const jumpState = localStorage.getItem('hideJump') !== 'true';
+            jumpToggle.classList.toggle('on', jumpState);
+        };
 
-    <button class="mc-button" onclick="goBack()">Back to Menu</button>
-    <button class="mc-button" onclick="showPopup()">Reset Settings</button>
-  </div>
+        nameInput.oninput = () => {
+            localStorage.setItem('playerName', nameInput.value);
+        };
 
-  <div id="popup-overlay"></div>
-  <div class="popup" id="reset-popup">
-    <p>Are you sure you want to reset all data?</p>
-    <button onclick="confirmReset()">Yes</button>
-    <button onclick="closePopup()">No</button>
-  </div>
+        musicSlider.oninput = () => {
+            localStorage.setItem('musicVolume', musicSlider.value);
+            updatePercent();
+        };
 
-  <script>
-    const nameInput = document.getElementById('playerName');
-    const musicSlider = document.getElementById('musicVolume');
-    const sfxSlider = document.getElementById('sfxVolume');
-    const musicPercent = document.getElementById('musicPercent');
-    const sfxPercent = document.getElementById('sfxPercent');
-    const jumpToggle = document.getElementById('jumpToggle');
-    const resetPopup = document.getElementById('resetPopup');
-    const panorama = document.getElementById('panorama');
-    const settingsBox = document.getElementById('settingsBox');
+        sfxSlider.oninput = () => {
+            localStorage.setItem('sfxVolume', sfxSlider.value);
+            updatePercent();
+        };
 
-    window.onload = () => {
-      nameInput.value = localStorage.getItem('playerName') || 'Steve';
-      musicSlider.value = localStorage.getItem('musicVolume') || 1;
-      sfxSlider.value = localStorage.getItem('sfxVolume') || 1;
-      updatePercent();
-      const jumpState = localStorage.getItem('hideJump') !== 'true';
-      jumpToggle.classList.toggle('on', jumpState);
-    };
+        function updatePercent() {
+            musicPercent.textContent = Math.round(musicSlider.value * 100) + '%';
+            sfxPercent.textContent = Math.round(sfxSlider.value * 100) + '%';
+        }
 
-    nameInput.oninput = () => {
-      localStorage.setItem('playerName', nameInput.value || 'Steve');
-    };
+        jumpToggle.onclick = () => {
+            const isOn = jumpToggle.classList.toggle('on');
+            localStorage.setItem('hideJump', !isOn);
+        };
 
-    musicSlider.oninput = () => {
-      localStorage.setItem('musicVolume', musicSlider.value);
-      updatePercent();
-    };
+        function goBack() {
+            window.location.href = 'index.html';
+        }
 
-    sfxSlider.oninput = () => {
-      localStorage.setItem('sfxVolume', sfxSlider.value);
-      updatePercent();
-    };
+        function showPopup() {
+            document.getElementById("reset-popup").classList.add("active");
+            document.getElementById("popup-overlay").classList.add("active");
+        }
 
-    function updatePercent() {
-      musicPercent.textContent = Math.round(musicSlider.value * 100) + '%';
-      sfxPercent.textContent = Math.round(sfxSlider.value * 100) + '%';
-    }
+        function closePopup() {
+            document.getElementById("reset-popup").classList.remove("active");
+            document.getElementById("popup-overlay").classList.remove("active");
+        }
 
-    jumpToggle.onclick = () => {
-      const isOn = jumpToggle.classList.toggle('on');
-      localStorage.setItem('hideJump', !isOn);
-    };
-
-    function goBack() {
-      window.location.href = 'index.html';
-    }
-
-function showPopup() {
-      document.getElementById("reset-popup").classList.add("active");
-      document.getElementById("popup-overlay").classList.add("active");
-    }
-
-    function closePopup() {
-      document.getElementById("reset-popup").classList.remove("active");
-      document.getElementById("popup-overlay").classList.remove("active");
-    }
-
-    function confirmReset() {
-      localStorage.clear();
-      nameInput.value = 'Steve';
-      musicSlider.value = 1;
-      sfxSlider.value = 1;
-      jumpToggle.classList.add('on');
-      updatePercent();
-      closePopup();
-    }
-  </script>
-  </script>
-<script>
-function isTouchDevice() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        function confirmReset() {
+    localStorage.clear();
+    closePopup();
+    setTimeout(() => {
+        location.reload();
+    }, 300); // slight delay for smooth transition
 }
+    </script>
 
-function isMobileOS() {
-  const ua = navigator.userAgent.toLowerCase();
-  return /android|iphone|ipad|ipod/i.test(ua);
-}
-
-function isMobileInDesktopMode() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const aspectRatio = width / height;
-  return isMobileOS() && aspectRatio > 1.3;
-}
-
-function isLandscapeMode() {
-  return window.innerWidth > window.innerHeight;
-}
-
-function isEmulatorOrFakeTouch() {
-  const isMobileUA = isMobileOS();
-  const noTouch = !isTouchDevice();
-  const screenSizeSuspect = screen.width > 800 || screen.height > 800;
-  return isMobileUA && noTouch && screenSizeSuspect;
-}
-
-function getRestrictionReason() {
-  if (!isMobileOS()) return "nonMobile";
-  if (isLandscapeMode()) return "landscape";
-  if (isMobileInDesktopMode()) return "desktopMode";
-  if (!isTouchDevice()) return "noTouch";
-  if (isEmulatorOrFakeTouch()) return "emulator";
-  return null;
-}
-
-function enforceMobileMode() {
-  const reason = getRestrictionReason();
-  if (reason) {
-    window.location.href = `unsupported.html?reason=${reason}`;
-  }
-}
-
-window.addEventListener("load", enforceMobileMode);
-window.addEventListener("resize", enforceMobileMode);
-</script>
 </body>
+
 </html>
