@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>MC Run</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>CRAFTRUNNER.IO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         @font-face {
@@ -28,6 +29,75 @@
             display: block;
             width: 100vw;
             height: 100vh;
+        }
+
+        #timeOverlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+            transition: background 3s linear;
+        }
+
+        #sun,
+        #moon {
+            position: absolute;
+            width: 10vw;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            z-index: 0;
+        }
+
+        #moon {
+            filter: drop-shadow(0 0 20px rgba(200, 200, 255, 0.5));
+        }
+
+        #stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        #shootingStar {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, white, transparent);
+            opacity: 0;
+            transform: rotate(45deg);
+            z-index: 1;
+            pointer-events: none;
         }
 
         #scoreContainer,
@@ -80,27 +150,26 @@
         }
 
         .mc-button {
-            width: 50vw;
+            width: 40vw;
             max-width: 160px;
-            height: 19vw;
+            height: 10vw;
             max-height: 40px;
             background: url('images/button.png') no-repeat center center;
-            background-size: 100% 100%;
+            background-size: cover;
             color: white;
             font-size: 4vw;
             border: none;
             margin: 0 2vw;
             font-family: Minecraft;
             text-shadow: 1px 1px 0 #000;
-            cursor: touch;
-            transition: transform 0.1s ease;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .mc-button:active {
-            transform: scale(0.85);
+            transform: scale(0.95);
         }
 
         #jumpBtn {
@@ -116,10 +185,12 @@
             border: none;
         }
     </style>
+
 </head>
 
 <body>
     <canvas id="gameCanvas"></canvas>
+
     <div id="scoreContainer">Score: 0</div>
     <div id="emeraldContainer">Emeralds: 0</div>
     <div id="gameOver">
@@ -130,9 +201,8 @@
             <button class="mc-button" onclick="location.reload()">Respawn</button>
             <button class="mc-button" onclick="location.href='index.html'">Title Screen</button>
         </div>
-    </div><button id="jumpBtn"></button>
-
-    <!-- Load skins definitions first -->
+    </div>
+    <button id="jumpBtn"></button>
     <script src="skins.js"></script>
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -159,10 +229,12 @@
         let tntX = canvas.width + 200;
         let grassX = 0;
         let over = false;
+        let dayTime = true;
+        let dayTimer = 0;
+        let jumpTrail = [];
 
         document.getElementById('emeraldContainer').innerText = 'Emeralds: ' + emeralds;
 
-        // Choose equipped skin from localStorage
         const equipped = localStorage.getItem('equippedSkin') || 'steve';
         const skinObj = skins.find(s => s.id === equipped) || skins[0];
         const playerImg = new Image();
@@ -170,15 +242,30 @@
 
         const tntImg = new Image();
         tntImg.src = 'images/tnt.png';
+        const zombieImg = new Image();
+        zombieImg.src = 'images/zombie.png';
         const grassImg = new Image();
         grassImg.src = 'images/grass.png';
+        const sunImg = new Image();
+        sunImg.src = 'images/sun.png';
+        const moonImg = new Image();
+        moonImg.src = 'images/moon.png';
+
+        let cloudX = canvas.width;
+        let cloudY = canvas.height * 0.1;
+        const cloudW = block * 4;
+        const cloudH = block * 1.5;
 
         function drawPlayer() {
             ctx.drawImage(playerImg, 50, playerY, pW, pH);
         }
 
         function drawTNT() {
-            ctx.drawImage(tntImg, tntX, canvas.height - gH - tH, tW, tH);
+            const image = dayTime ? tntImg : zombieImg;
+            const width = dayTime ? tW : pW;
+            const height = dayTime ? tH : pH;
+            const y = canvas.height - gH - height;
+            ctx.drawImage(image, tntX, y, width, height);
         }
 
         function drawGrass() {
@@ -186,27 +273,92 @@
             ctx.drawImage(grassImg, grassX + canvas.width, canvas.height - gH, canvas.width, gH);
         }
 
+        function drawSkyElements() {
+            const skyY = canvas.height * 0.1;
+            const radius = canvas.height * 0.2;
+            const angle = (dayTimer / 300) * 2 * Math.PI;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height;
+            const x = centerX + radius * Math.cos(angle - Math.PI);
+            const y = centerY + radius * Math.sin(angle - Math.PI);
+            const skyImg = dayTime ? sunImg : moonImg;
+
+            // Create gradient for smooth transition between day and night
+            let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (dayTime) {
+                gradient.addColorStop(0, '#87CEEB'); // Sky blue
+                gradient.addColorStop(1, '#00BFFF'); // Deep sky blue
+            } else {
+                gradient.addColorStop(0, '#191970'); // Midnight blue
+                gradient.addColorStop(1, '#000080'); // Navy blue
+            }
+
+            ctx.fillStyle = gradient; // Apply gradient
+            ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the sky background
+
+            ctx.drawImage(skyImg, x, y, block * 2.5, block * 2.5);
+        }
+
+        function drawClouds() {
+            const opacity = dayTime ? 0.5 : 0.2;
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.ellipse(cloudX, cloudY, cloudW, cloudH, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+
+        function drawJumpTrail() {
+            for (let i = 0; i < jumpTrail.length; i++) {
+                const t = jumpTrail[i];
+                ctx.beginPath();
+                ctx.globalAlpha = t.alpha;
+                ctx.fillStyle = '#cce6ff'; // moonlight blue
+                ctx.arc(t.x, t.y, block * 0.3, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                t.alpha -= 0.05;
+            }
+            jumpTrail = jumpTrail.filter(t => t.alpha > 0);
+        }
+
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawSkyElements();
+            drawClouds();
             drawGrass();
+            if (!dayTime) drawJumpTrail();
             drawPlayer();
             drawTNT();
 
             if (!over) {
-                // Jump physics
                 if (jumping) {
                     playerY += vy;
                     vy += gravity;
+
+                    if (!dayTime) {
+                        jumpTrail.push({
+                            x: 50 + pW / 2,
+                            y: playerY + pH / 2,
+                            alpha: 0.6
+                        });
+                        if (jumpTrail.length > 10) jumpTrail.shift();
+                    }
+
                     if (playerY >= canvas.height - pH - gH) {
                         playerY = canvas.height - pH - gH;
                         jumping = false;
                     }
                 }
-                // Scroll
+
                 tntX -= speed;
                 grassX -= speed;
+                cloudX -= 1;
+                if (cloudX < -cloudW) cloudX = canvas.width;
                 if (grassX <= -canvas.width) grassX = 0;
-                // Recycle TNT & score
+
                 if (tntX + tW < 0) {
                     tntX = canvas.width + Math.random() * 500;
                     score++;
@@ -215,7 +367,7 @@
                     document.getElementById('scoreContainer').innerText = 'Score: ' + score;
                     document.getElementById('emeraldContainer').innerText = 'Emeralds: ' + emeralds;
                 }
-                // Collision using reduced hit-box
+
                 const px1 = 50 + marginX;
                 const px2 = 50 + pW - marginX;
                 const py1 = playerY + marginY;
@@ -223,24 +375,33 @@
                 const tx1 = tntX;
                 const tx2 = tntX + tW;
                 const ty = canvas.height - gH - tH;
+
                 if (px2 > tx1 && px1 < tx2 && py2 > ty) {
                     over = true;
                     document.getElementById('finalScore').innerText = 'Score: ' + score;
                     document.getElementById('gameOver').style.display = 'flex';
                 }
+
+                dayTimer++;
+                if (dayTimer > 600) {
+                    dayTime = !dayTime;
+                    dayTimer = 0;
+                }
             }
+
             requestAnimationFrame(update);
         }
 
         document.getElementById('jumpBtn').addEventListener('click', () => {
             if (!jumping && !over) {
                 jumping = true;
-                vy = -block * 0.4;
+                vy = dayTime ? -block * 0.4 : -block * 0.6; // longer jump at night
             }
         });
 
         window.onload = update;
     </script>
+
 </body>
 
 </html>
