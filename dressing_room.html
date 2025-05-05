@@ -1,202 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Dressing Room | MC Run</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    @font-face {
-      font-family: 'Minecraft';
-      src: url('fonts/Minecraft.ttf');
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Minecraft';
-      user-select: none;
-    }
-    body {
-      background: url('images/bg.png') no-repeat center center fixed;
-      background-size: cover;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .container {
-      width: 90vw;
-      max-width: 500px;
-      height: 96vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .skin-preview {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 3vh;
-    }
-    .skin-name {
-      font-size: 6vw;
-      color: white;
-      text-shadow: 2px 2px black;
-      margin-bottom: 2vh;
-    }
-    .skin-img {
-      width: 95vw;
-      height: 60vw;
-      max-width: 190px;
-      image-rendering: pixelated;
-    }
-    .arrow-row {
-      display: flex;
-      justify-content: center;
-      gap: 6vw;
-      margin: 3vh 0 1.5vh 0;
-    }
-    .btn {
-      width: 70vw;
-      max-width: 260px;
-      height: 48px;
-      background-image: url('images/button.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border: none;
-      font-family: 'Minecraft';
-      font-size: 18px;
-      color: white;
-      text-shadow: 1px 1px black;
-      line-height: 42px;
-      text-align: center;
-      transition: transform 0.1s ease;
-      background-color: transparent;
-    }
-    .btn:active {
-      transform: scale(0.85);
-    }
-    .small-btn {
-      width: 17vw;
-    }
-    .wide-btn {
-      width: 70vw;
-      margin-bottom: 2vh;
-    }
-    .disabled-btn {
-      opacity: 0.4;
-      filter: grayscale(100%);
-      pointer-events: none;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>Dressing Room | CRAFTRUNNER.IO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('fonts/Minecraft.ttf');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Minecraft';
+            user-select: none;
+        }
+
+        body {
+            background: transperent;
+            background-size: cover;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        panorama {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: url('images/bg.png') center center / cover no-repeat;
+            animation: movePanorama 40s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes movePanorama {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            width: 90vw;
+            max-width: 500px;
+            height: 96vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        #loadingScreen img {
+            width: 80px;
+            height: 80px;
+        }
+
+        #loadingScreen h1 {
+            color: white;
+            margin-top: 15px;
+            font-size: 20px;
+        }
+
+        .skin-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 3vh;
+        }
+
+        .skin-name {
+            font-size: 6vw;
+            color: white;
+            text-shadow: 2px 2px black;
+            margin-bottom: 2vh;
+        }
+
+        .skin-img {
+            width: 95vw;
+            height: 60vw;
+            max-width: 190px;
+            image-rendering: pixelated;
+        }
+
+        .arrow-row {
+            display: flex;
+            justify-content: center;
+            gap: 6vw;
+            margin: 3vh 0 1.5vh 0;
+        }
+
+        .btn {
+            width: 70vw;
+            max-width: 260px;
+            height: 48px;
+            background-image: url('images/button.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border: none;
+            font-family: 'Minecraft';
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px black;
+            line-height: 42px;
+            text-align: center;
+            transition: transform 0.1s ease;
+            background-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.85);
+        }
+
+        .small-btn {
+            width: 17vw;
+        }
+
+        .small-btn:active {
+            transform: scale(0.85);
+        }
+
+        .wide-btn {
+            width: 70vw;
+            margin-bottom: 2vh;
+        }
+
+        .wide-btn:active {
+            transform: scale(0.85);
+        }
+
+
+        .disabled-btn {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .disabled-btn:active {
+            transform: scale(0.85);
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="skin-preview">
-      <div class="skin-name" id="skinName">Steve</div>
-      <img src="images/skins/steve.png" id="skinImage" class="skin-img" />
+    <panorama></panorama>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <img src="images/loading.gif" alt="Loading...">
+        <h1>Loading...</h1>
+    </div>
+    <div class="container" id="mainMenu">
+        <div class="skin-preview">
+            <div class="skin-name" id="skinName">Steve</div>
+            <img src="images/skins/steve.png" id="skinImage" class="skin-img" />
+        </div>
+
+        <div class="arrow-row">
+            <button class="btn small-btn" onclick="prevSkin()">←</button>
+            <button class="btn small-btn" onclick="nextSkin()">→</button>
+        </div>
+
+        <button class="btn wide-btn" id="equipButton">Equipped</button>
+        <button class="btn wide-btn" onclick="location.href='index.html'">Back To Home</button>
     </div>
 
-    <div class="arrow-row">
-      <button class="btn small-btn" onclick="prevSkin()">←</button>
-      <button class="btn small-btn" onclick="nextSkin()">→</button>
-    </div>
+    <script src="skins.js"></script>
+    <script>
+        let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins') || '["steve","alex"]');
+        let equippedSkin = localStorage.getItem('equippedSkin') || "steve";
+        let ownedSkinData = skins.filter(skin => ownedSkins.includes(skin.id));
+        let currentIndex = ownedSkinData.findIndex(s => s.id === equippedSkin);
+        if (currentIndex === -1) currentIndex = 0;
 
-    <button class="btn wide-btn" id="equipButton">Equipped</button>
-    <button class="btn wide-btn" onclick="location.href='index.html'">Back To Home</button>
-  </div>
+        function updateSkinDisplay() {
+            const skin = ownedSkinData[currentIndex];
+            document.getElementById('skinName').innerText = skin.name;
+            document.getElementById('skinImage').src = skin.image;
 
-  <script src="skins.js"></script>
-  <script>
-    let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins') || '["steve","alex"]');
-    let equippedSkin = localStorage.getItem('equippedSkin') || "steve";
-    let ownedSkinData = skins.filter(skin => ownedSkins.includes(skin.id));
-    let currentIndex = ownedSkinData.findIndex(s => s.id === equippedSkin);
-    if (currentIndex === -1) currentIndex = 0;
+            const equipBtn = document.getElementById('equipButton');
+            if (skin.id === equippedSkin) {
+                equipBtn.innerText = "Equipped";
+                equipBtn.classList.add('disabled-btn');
+                equipBtn.disabled = true;
+            } else {
+                equipBtn.innerText = "Equip";
+                equipBtn.classList.remove('disabled-btn');
+                equipBtn.disabled = false;
+            }
+        }
 
-    function updateSkinDisplay() {
-      const skin = ownedSkinData[currentIndex];
-      document.getElementById('skinName').innerText = skin.name;
-      document.getElementById('skinImage').src = skin.image;
+        function prevSkin() {
+            currentIndex = (currentIndex - 1 + ownedSkinData.length) % ownedSkinData.length;
+            updateSkinDisplay();
+        }
 
-      const equipBtn = document.getElementById('equipButton');
-      if (skin.id === equippedSkin) {
-        equipBtn.innerText = "Equipped";
-        equipBtn.classList.add('disabled-btn');
-        equipBtn.disabled = true;
-      } else {
-        equipBtn.innerText = "Equip";
-        equipBtn.classList.remove('disabled-btn');
-        equipBtn.disabled = false;
-      }
-    }
+        function nextSkin() {
+            currentIndex = (currentIndex + 1) % ownedSkinData.length;
+            updateSkinDisplay();
+        }
 
-    function prevSkin() {
-      currentIndex = (currentIndex - 1 + ownedSkinData.length) % ownedSkinData.length;
-      updateSkinDisplay();
-    }
+        document.getElementById('equipButton').addEventListener('click', () => {
+            equippedSkin = ownedSkinData[currentIndex].id;
+            localStorage.setItem('equippedSkin', equippedSkin);
+            updateSkinDisplay();
+        });
 
-    function nextSkin() {
-      currentIndex = (currentIndex + 1) % ownedSkinData.length;
-      updateSkinDisplay();
-    }
-
-    document.getElementById('equipButton').addEventListener('click', () => {
-      equippedSkin = ownedSkinData[currentIndex].id;
-      localStorage.setItem('equippedSkin', equippedSkin);
-      updateSkinDisplay();
-    });
-
-    updateSkinDisplay();
-  </script>
-  <script>
-function isTouchDevice() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-}
-
-function isMobileOS() {
-  const ua = navigator.userAgent.toLowerCase();
-  return /android|iphone|ipad|ipod/i.test(ua);
-}
-
-function isMobileInDesktopMode() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const aspectRatio = width / height;
-  return isMobileOS() && aspectRatio > 1.3;
-}
-
-function isLandscapeMode() {
-  return window.innerWidth > window.innerHeight;
-}
-
-function isEmulatorOrFakeTouch() {
-  const isMobileUA = isMobileOS();
-  const noTouch = !isTouchDevice();
-  const screenSizeSuspect = screen.width > 800 || screen.height > 800;
-  return isMobileUA && noTouch && screenSizeSuspect;
-}
-
-function getRestrictionReason() {
-  if (!isMobileOS()) return "nonMobile";
-  if (isLandscapeMode()) return "landscape";
-  if (isMobileInDesktopMode()) return "desktopMode";
-  if (!isTouchDevice()) return "noTouch";
-  if (isEmulatorOrFakeTouch()) return "emulator";
-  return null;
-}
-
-function enforceMobileMode() {
-  const reason = getRestrictionReason();
-  if (reason) {
-    window.location.href = `unsupported.html?reason=${reason}`;
-  }
-}
-
-window.addEventListener("load", enforceMobileMode);
-window.addEventListener("resize", enforceMobileMode);
-</script>
+        updateSkinDisplay();
+        setTimeout(() => {
+            document.getElementById("loadingScreen").style.display = "none";
+            document.getElementById("mainMenu").style.display = "flex";
+        }, 1000);
+    </script>
 </body>
+
 </html>
