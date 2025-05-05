@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home | CRAFTRUNNER.IO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('fonts/Minecraft.ttf');
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Minecraft';
+            user-select: none;
+            touch-action: manipulation;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        panorama {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: url('images/bg.png') center center / cover no-repeat;
+            animation: movePanorama 40s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes movePanorama {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #loadingScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        #loadingScreen img {
+            width: 80px;
+            height: 80px;
+        }
+
+        #loadingScreen h1 {
+            color: white;
+            margin-top: 15px;
+            font-size: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            padding-top: 20px;
+            box-sizing: border-box;
+            display: none;
+            position: relative;
+        }
+
+        .logo {
+            width: 60vw;
+            max-width: 280px;
+            image-rendering: pixelated;
+        }
+
+        .splash {
+            font-size: 10px;
+            color: yellow;
+            margin-top: 4px;
+            margin-right: -200px;
+            transform: rotate(-10deg);
+            animation: splashFloat 2s ease-in-out infinite;
+            white-space: nowrap;
+            text-shadow: 2px 2px black;
+            max-width: 100%;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        @keyframes splashFloat {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            50% { transform: rotate(-10deg) scale(1.1); }
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 8vh;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .button {
+            width: 70vw;
+            max-width: 260px;
+            height: 48px;
+            background-image: url('images/button.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border: none;
+            font-family: 'Minecraft';
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px black;
+            line-height: 42px;
+            text-align: center;
+            transition: transform 0.1s ease;
+            background-color: transparent;
+        }
+
+        .button:active {
+            transform: scale(0.85);
+        }
+
+        .small-button {
+            width: 130px;
+            height: 32px;
+            font-size: 14px;
+            line-height: 32px;
+        }
+
+        .preview {
+            position: absolute;
+            right: 10px;
+            bottom: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .skin-image {
+            width: 80px;
+            image-rendering: pixelated;
+        }
+
+        .player-name {
+            font-size: 14px;
+            color: white;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px black;
+            max-width: 120px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .version {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .credit {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <panorama></panorama>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <img src="images/loading.gif" alt="Loading...">
+        <h1>Loading...</h1>
+    </div>
+
+    <!-- Main Menu -->
+    <div class="container" id="mainMenu">
+        <img src="images/logo.png" alt="MC Run Logo" class="logo">
+        <div class="splash" id="splashText">Loading splash...</div>
+
+        <div class="menu">
+            <button class="button" onclick="location.href='game.html'">Game</button>
+            <button class="button" onclick="location.href='shop.html'">Shop</button>
+            <button class="button" onclick="location.href='settings.html'">Settings</button>
+            <button class="button" onclick="location.href='about.html'">About</button>
+        </div>
+
+        <!-- Player Preview (Right Side) -->
+        <div class="preview">
+            <div class="player-name" id="playerName">Steve</div>
+            <img id="skinPreview" class="skin-image" src="images/steve.png">
+            <button class="button small-button" onclick="location.href='dressing_room.html'">Dressing Room</button>
+        </div>
+    </div>
+
+    <div class="version">v0.1.70 (Test App v1)</div>
+    <div class="credit">©GamerArnabXYZ</div>
+
+    <script src="skins.js"></script>
+    <script src="splashes.js"></script>
+    <script>
+// Redirect if not logged in
+    if (!localStorage.getItem("playerName")) {
+        window.location.href = "index.html";
+    }
+        if (!localStorage.getItem("playerName")) {
+            localStorage.setItem("playerName");
+        }
+
+        function autoScaleSplash(element, maxFont = 10, minFont = 6) {
+            let fontSize = maxFont;
+            element.style.whiteSpace = "normal";
+            element.style.fontSize = fontSize + "px";
+            setTimeout(() => {
+                const maxHeight = fontSize * 3.2;
+                while ((element.scrollWidth > element.clientWidth || element.scrollHeight > maxHeight) && fontSize > minFont) {
+                    fontSize--;
+                    element.style.fontSize = fontSize + "px";
+                }
+            }, 0);
+        }
+
+        function autoScaleName(element, maxFont = 14, minFont = 10) {
+            let fontSize = maxFont;
+            element.style.fontSize = fontSize + "px";
+            while (element.scrollWidth > element.clientWidth && fontSize > minFont) {
+                fontSize--;
+                element.style.fontSize = fontSize + "px";
+            }
+        }
+
+        function scaleSplashAndName() {
+            autoScaleSplash(document.getElementById("splashText"));
+            autoScaleName(document.getElementById("playerName"));
+        }
+
+        window.onload = function () {
+            const name = localStorage.getItem("playerName") || "Steve";
+            const skinKey = localStorage.getItem("equippedSkin") || "steve";
+
+            document.getElementById("playerName").innerText = name;
+
+            const equippedSkin = (typeof skins !== "undefined" && skins.find(s => s.id === skinKey));
+            document.getElementById("skinPreview").src = equippedSkin ? equippedSkin.image : "images/steve.png";
+
+            const splash = (typeof splashTexts !== "undefined" && splashTexts.length)
+                ? splashTexts[Math.floor(Math.random() * splashTexts.length)]
+                : "Welcome to MC Run!";
+
+            document.getElementById("splashText").innerText = splash;
+
+            scaleSplashAndName();
+
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainMenu").style.display = "flex";
+            }, 1000);
+        };
+
+        window.addEventListener("resize", scaleSplashAndName);
+    </script>
+</body>
+
+</html>
