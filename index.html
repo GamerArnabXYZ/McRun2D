@@ -1,274 +1,396 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<title>Home | MC Run</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <style>
-    @font-face {
-      font-family: 'Minecraft';
-      src: url('fonts/Minecraft.ttf');
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>Login | CraftRunner.IO</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: transparent;
-      font-family: 'Minecraft';
-      user-select: none;
-      touch-action: manipulation;
-      height: 100vh;
-      width: 100vw;
-    }
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('fonts/Minecraft.ttf') format('truetype');
+        }
 
-    panorama {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      background: url('images/bg.png') center center / cover no-repeat;
-      animation: movePanorama 40s linear infinite;
-      z-index: -1;
-    }
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Minecraft';
+            user-select: none;
+            touch-action: manipulation;
+            height: 100vh;
+            width: 100vw;
+        }
 
-    @keyframes movePanorama {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+        /* Panorama Background */
+        #panorama {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('images/bg.png') center center / cover no-repeat;
+            animation: movePanorama 60s linear infinite;
+            z-index: -1;
+        }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100%;
-      padding-top: 20px;
-      box-sizing: border-box;
-    }
+        @keyframes movePanorama {
+            0% {
+                background-position: 0% 50%;
+            }
 
-    .logo {
-      width: 60vw;
-      max-width: 280px;
-      image-rendering: pixelated;
-    }
+            50% {
+                background-position: 100% 50%;
+            }
 
-    .splash {
-      font-size: 10px;
-      color: yellow;
-      margin-top: 4px;
-      margin-right: -200px;
-      transform: rotate(-10deg);
-      animation: splashFloat 2s ease-in-out infinite;
-      white-space: nowrap;
-      text-shadow: 2px 2px black;
-      max-width: 100%;
-      text-align: center;
-      overflow: hidden;
-      word-wrap: break-word;
-    }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
 
-    @keyframes splashFloat {
-      0%, 100% { transform: rotate(-10deg) scale(1); }
-      50% { transform: rotate(-10deg) scale(1.1); }
-    }
+        /* Loading Screen */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+        }
 
-    .menu {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 8vh;
-      gap: 12px;
-      width: 100%;
-    }
+        #loadingScreen img {
+            width: 80px;
+            height: 80px;
+        }
 
-    .button {
-      width: 70vw;
-      max-width: 260px;
-      height: 48px;
-      background-image: url('images/button.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border: none;
-      font-family: 'Minecraft';
-      font-size: 18px;
-      color: white;
-      text-shadow: 1px 1px black;
-      line-height: 42px;
-      text-align: center;
-      transition: transform 0.1s ease;
-      background-color: transparent;
-    }
+        #loadingScreen h1 {
+            color: white;
+            margin-top: 15px;
+            font-size: 20px;
+        }
 
-    .button:active {
-      transform: scale(0.85);
-    }
+        /* Main Menu Layout */
+        #mainMenu {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .small-button {
-      width: 130px;
-      height: 32px;
-      font-size: 14px;
-      line-height: 32px;
-    }
+        #gameTitle {
+            width: 100vw;
+            max-width: 80%;
+            margin-bottom: 4vh;
+            margin-top: -20vh;
+        }
 
-    .preview {
-      position: absolute;
-      bottom: 80px;
-      right: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        /* Username Input */
+        .inputBox {
+            margin-bottom: 12px;
+        }
 
-    .skin-image {
-      width: 80px;
-      image-rendering: pixelated;
-    }
+        input[type="text"] {
+            font-family: 'Minecraft';
+            padding: 10px;
+            width: 250px;
+            font-size: 16px;
+            text-align: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid white;
+            border-radius: 10px;
+            backdrop-filter: blur(3px);
+            outline: none;
+        }
 
-    .player-name {
-      font-size: 14px;
-      color: white;
-      margin-bottom: 6px;
-      text-shadow: 1px 1px black;
-      max-width: 120px;
-      overflow: hidden;
-    }
+        /* Classic Minecraft Button */
+        .button {
+            width: 60vw;
+            max-width: 260px;
+            height: 48px;
+            background-image: url('images/button.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border: none;
+            font-family: 'Minecraft';
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px black;
+            line-height: 42px;
+            text-align: center;
+            transition: transform 0.1s ease;
+            background-color: transparent;
+        }
 
-    .version {
-      position: absolute;
-      bottom: 5px;
-      left: 10px;
-      font-size: 12px;
-      color: #ccc;
-    }
+        .button:active {
+            transform: scale(0.85);
+        }
 
-    .credit {
-      position: absolute;
-      bottom: 5px;
-      right: 10px;
-      font-size: 12px;
-      color: #ccc;
-    }
-  </style>
+        #offlineNote {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        /* Google Sign-In Button */
+        #googleButton {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Minecraft';
+            font-size: 15px;
+            color: white;
+            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            background-size: 400% 400%;
+            animation: gradientShift 5s ease infinite;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 0 5px black;
+            transition: transform 0.1s ease;
+        }
+
+        #googleButton img {
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        #googleButton:active {
+            transform: scale(0.85);
+        }
+
+        #note {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        /* Modal Popup */
+        #popupModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modalContent {
+            background: #111;
+            padding: 24px;
+            border: 3px solid white;
+            border-radius: 12px;
+            width: 88%;
+            max-width: 320px;
+            text-align: center;
+            color: white;
+            font-family: 'Minecraft';
+            box-shadow: 0 0 15px black;
+            background-image: url('images/button.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            animation: popupBounce 0.4s ease;
+        }
+
+        @keyframes popupBounce {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .modalContent h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: yellow;
+            text-shadow: 1px 1px black;
+        }
+
+        .modalContent p {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .modalContent button {
+            padding: 8px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 14px;
+            border-radius: 6px;
+            font-family: 'Minecraft';
+            box-shadow: 0 0 5px #000;
+            transition: transform 0.1s ease;
+        }
+
+        .modalContent button:hover {
+            background: #45a049;
+        }
+
+        .modalContent button:active {
+            transform: scale(0.85);
+        }
+
+
+
+        /* Version and Credit */
+        #version {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        #credit {
+           position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        /* Background Animation */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <panorama></panorama>
-  <div class="container">
-    <img src="images/logo.png" alt="MC Run Logo" class="logo">
-    <div class="splash" id="splashText">Loading splash...</div>
+    <div id="panorama"></div>
 
-    <div class="menu">
-      <button class="button" onclick="location.href='game.html'">Game</button>
-      <button class="button" onclick="location.href='shop.html'">Shop</button>
-      <button class="button" onclick="location.href='settings.html'">Settings</button>
-      <button class="button" onclick="location.href='about.html'">About</button>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <img src="images/loading.gif" alt="Loading...">
+        <h1>Loading...</h1>
     </div>
-  </div>
 
-  <div class="preview">
-    <div class="player-name" id="playerName">Steve</div>
-    <img id="skinPreview" class="skin-image" src="">
-    <button class="button small-button" onclick="location.href='dressing_room.html'">Dressing Room</button>
-  </div>
+    <!-- Main Menu -->
+    <div id="mainMenu" style="display: none;">
+        <img src="images/logo.png" alt="MC RUN" id="gameTitle">
 
-  <div class="version">v0.1.60 Beta (v1.0 Soon)</div>
-  <div class="credit">©GamerArnabXYZ</div>
+        <div class="inputBox">
+            <input type="text" id="username" placeholder="Enter Username" autocomplete="off">
+        </div>
 
-  <script src="skins.js"></script>
-  <script src="splashes.js"></script>
-  <script>
-  function autoScaleSplash(element, maxFont = 10, minFont = 6) {
-    let fontSize = maxFont;
-    element.style.whiteSpace = "normal";
-    element.style.fontSize = fontSize + "px";
+        <button class="button" onclick="loginOffline()">Login Offline</button>
+        <div id="offlineNote">Only For Offline</div>
 
-    // Wait for rendering
-    setTimeout(() => {
-      const maxHeight = fontSize * 3.2;
-      while ((element.scrollWidth > element.clientWidth || element.scrollHeight > maxHeight) && fontSize > minFont) {
-        fontSize--;
-        element.style.fontSize = fontSize + "px";
-      }
-    }, 0);
-  }
+        <button id="googleButton" onclick="loginOnline()">
+            <img src="images/google.png" alt="G"> Sign in with Google
+        </button>
+        <div id="note">(Online/Offline Supported)</div>
+    </div>
+    <!-- Version and Copyright -->
+    <div id="version">v0.1.70 (Test App v1)</div>
+    <div id="credit">©GamerArnabXYZ</div>
 
-  function autoScaleName(element, maxFont = 14, minFont = 10) {
-    let fontSize = maxFont;
-    element.style.fontSize = fontSize + "px";
-    while (element.scrollWidth > element.clientWidth && fontSize > minFont) {
-      fontSize--;
-      element.style.fontSize = fontSize + "px";
-    }
-  }
+    <!-- Popup Modal -->
+    <div id="popupModal">
+        <div class="modalContent">
+            <h2 id="popupTitle">Warning!</h2>
+            <p id="popupMessage">Your message here</p>
+            <button onclick="closeModal()">OK</button>
+        </div>
+    </div>
 
-  function scaleSplashAndName() {
-    autoScaleSplash(document.getElementById("splashText"));
-    autoScaleName(document.getElementById("playerName"));
-  }
 
-  window.onload = function () {
-    const name = localStorage.getItem("playerName") || "Steve";
-    const skinKey = localStorage.getItem("equippedSkin") || "steve";
-    document.getElementById("playerName").innerText = name;
+    <!-- Script -->
+    <script>
+        // Redirect if already logged in
+        if (localStorage.getItem("playerName")) {
+            location.href = "home.html";
+        }
 
-    const equippedSkin = skins.find(s => s.id === skinKey);
-    document.getElementById("skinPreview").src = equippedSkin ? equippedSkin.image : "images/steve.png";
+        // Show main menu after loading
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainMenu").style.display = "flex";
+            }, 1000);
+        };
 
-    const splash = splashTexts[Math.floor(Math.random() * splashTexts.length)];
-    document.getElementById("splashText").innerText = splash;
+        // Offline login function
+        function loginOffline() {
+            const username = document.getElementById("username").value.trim();
+            if (username === "") {
+                showModal("Warning!", "Please enter a username to continue.");
+            } else {
+                localStorage.setItem("playerName", username);
+                location.href = "home.html";
+            }
+        }
 
-    scaleSplashAndName();
-  };
+        // Online login placeholder
+        function loginOnline() {
+            showModal("Coming Soon!", "Online login is not available yet.");
+        }
 
-  window.addEventListener("resize", scaleSplashAndName);
-</script>
-<script>
-function isTouchDevice() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-}
+        // Show popup modal
+        function showModal(title, message) {
+            document.getElementById("popupTitle").innerText = title;
+            document.getElementById("popupMessage").innerText = message;
+            document.getElementById("popupModal").style.display = "flex";
+        }
 
-function isMobileOS() {
-  const ua = navigator.userAgent.toLowerCase();
-  return /android|iphone|ipad|ipod/i.test(ua);
-}
-
-function isMobileInDesktopMode() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const aspectRatio = width / height;
-  return isMobileOS() && aspectRatio > 1.3;
-}
-
-function isLandscapeMode() {
-  return window.innerWidth > window.innerHeight;
-}
-
-function isEmulatorOrFakeTouch() {
-  const isMobileUA = isMobileOS();
-  const noTouch = !isTouchDevice();
-  const screenSizeSuspect = screen.width > 800 || screen.height > 800;
-  return isMobileUA && noTouch && screenSizeSuspect;
-}
-
-function getRestrictionReason() {
-  if (!isMobileOS()) return "nonMobile";
-  if (isLandscapeMode()) return "landscape";
-  if (isMobileInDesktopMode()) return "desktopMode";
-  if (!isTouchDevice()) return "noTouch";
-  if (isEmulatorOrFakeTouch()) return "emulator";
-  return null;
-}
-
-function enforceMobileMode() {
-  const reason = getRestrictionReason();
-  if (reason) {
-    window.location.href = `unsupported.html?reason=${reason}`;
-  }
-}
-
-window.addEventListener("load", enforceMobileMode);
-window.addEventListener("resize", enforceMobileMode);
-</script>
+        // Close modal
+        function closeModal() {
+            document.getElementById("popupModal").style.display = "none";
+        }
+    </script>
 </body>
+
 </html>
